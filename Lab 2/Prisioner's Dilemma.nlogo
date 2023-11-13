@@ -37,8 +37,9 @@ to update-player-profit
   let strategy_value_p2 ifelse-value (p2_strategy = "C")[0][1] ;; Get the strategy value from one random player
   let strategy_value_p1 ifelse-value (strategy = "C") [0][1] ;; Get the strategy value from the current player
   ;; Get the payoff values
-  let payoff item strategy_value_p1 item strategy_value_p2 payoff_matrix
+  let payoff item strategy_value_p2 (item strategy_value_p1 payoff_matrix)
   set cumulative_profit (cumulative_profit + payoff)
+  ;;set label cumulative_profit
 end
 
 to update-player-strategy
@@ -92,7 +93,7 @@ participants
 participants
 2
 1000
-892.0
+727.0
 1
 1
 NIL
