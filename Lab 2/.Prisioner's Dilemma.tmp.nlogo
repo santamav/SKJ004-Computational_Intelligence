@@ -35,7 +35,7 @@ to update-player-profit
   ;; Get the strategy indexes for eeach player
   let p2_strategy [strategy] of one-of players
   ;; Get the payoff values
-  let payoff get-profit strategy p2_strategy
+  let payoff
   set cumulative_profit (cumulative_profit + payoff)
   ;;set label cumulative_profit
 end
@@ -101,7 +101,7 @@ participants
 participants
 2
 1000
-500.0
+727.0
 1
 1
 NIL
