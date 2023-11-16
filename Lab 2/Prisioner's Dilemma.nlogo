@@ -10,11 +10,9 @@ to setup
 end
 
 to go
-
-  ask players [
-    update-player-profit
-    update-player-strategy
-  ]
+  ask players [update-player-profit] ;; Update first the profit for all the turtles
+  ask players [update-player-strategy] ;; We want to update the strategies after computing all the new profits
+  if all? players [strategy = [strategy] of one-of players] [stop] ;; Stop if all players are following the same strategy
   tick
 end
 
@@ -31,15 +29,18 @@ to setup-players
   ]
 end
 
+
+;; Update player profit
 to update-player-profit
   ;; Get the strategy indexes for eeach player
-  let p2_strategy [strategy] of one-of players
+  let opponent_strategy [strategy] of one-of players
   ;; Get the payoff values
-  let payoff get-profit strategy p2_strategy
+  let payoff get-profit strategy opponent_strategy
   set cumulative_profit (cumulative_profit + payoff)
   ;;set label cumulative_profit
 end
 
+;; Update the player strategy
 to update-player-strategy
   ;; Get the random value
   let rdn random-float 1
@@ -50,20 +51,31 @@ to update-player-strategy
     update-player-color]
 end
 
-
+;; Update the player color based on the strategy
 to update-player-color
   ifelse strategy = "C" [set color blue][set color red]
 end
 
-to-report get-profit [p1_strategy p2_strategy]
-  let strategy_value_p1 strategy-value p1_strategy
-  let strategy_value_p2 strategy-value p2_strategy
-  report item strategy_value_p2 (item strategy_value_p1 payoff_matrix)
+;; Get player profit from the player strategy and the opponent
+to-report get-profit [p_strategy opponent]
+  let p_strategy_value strategy-value p_strategy
+  let opponent_strategy_value strategy-value opponent
+  report item opponent_strategy_value (item p_strategy_value payoff_matrix)
 end
 
+;; Get the strategy index value based on the player strategy
 to-report strategy-value [p_strategy]
   ifelse (p_strategy = "C") [report 0][report 1]
 end
+
+;; ****************** EXPERIMENTATION ***************
+;; Because of the nature of the problem what we observe from the experimentation is that all the players rapidly turn to the defect strategy
+;; because it is always the one that is going to receive the a higher payoff no matter the strategy of the opponent.
+;;
+;; What we see by changing the probability is that the lower the probability, the more time it gets to converge. That is because Cooperative agents
+;; will have a higher probability to stay with the same strategy. But that means that the ones that where Defects will accumulate a higher value over time
+;; when getting the payoffs from Cooperative opponents
+;; **************************************************
 @#$#@#$#@
 GRAPHICS-WINDOW
 235
@@ -116,7 +128,7 @@ strategy_change_prob
 strategy_change_prob
 0
 1
-0.1
+0.5
 0.1
 1
 NIL
