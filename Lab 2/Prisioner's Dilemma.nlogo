@@ -128,7 +128,7 @@ strategy_change_prob
 strategy_change_prob
 0
 1
-0.5
+0.9
 0.1
 1
 NIL
@@ -186,6 +186,25 @@ false
 PENS
 "C_Players" 1.0 0 -13345367 true "" "plot count players with [strategy = \"C\"]"
 "D_Players" 1.0 0 -2674135 true "" "plot count players with [strategy = \"D\"]"
+
+PLOT
+1009
+110
+1636
+532
+Cumulative Rewards
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"C" 1.0 0 -13345367 true "" "plot sum [cumulative_profit] of players with [strategy = \"C\"]"
+"D" 1.0 0 -2674135 true "" "plot sum [cumulative_profit] of players with [strategy = \"D\"]"
 
 @#$#@#$#@
 ## WHAT IS IT?
