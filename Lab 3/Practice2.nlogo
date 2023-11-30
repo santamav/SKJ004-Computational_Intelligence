@@ -1,4 +1,9 @@
-turtles-own [ mailbox ]
+;; Create the two agent types
+breed [greens green-agent]
+breed [blues blue-agent]
+;; Setup each types variables
+turtles-own [ mailbox partner ]
+greens-own [ successful ]
 
 ; *********** SETUP **************
 
@@ -21,14 +26,33 @@ end
 
 ;; Execution loop
 to go
-
+  ;; Update green turtles
+  ask greens [update-greens]
+  ;; Update blue turtles
+  tick
 end
 
-;; update turtles
+;; ******* update turtles ********
+
+;; Green turtles send message
+to update-greens
+  let sent_messages 0
+  loop [
+    if sent_messages >= n_green_messages [stop] ;; stop condition
+    ;; Build the message
+    ifelse (random-float 1) >= 0.99
+    [send-message partner create-msg "inform"] ;; Send inform message
+    [send-message partner create-msg "report"] ;; Send report message
+  ]
+end
+;; *******************************
 
 ;; Get value related to the key in the message
 to-report get-value-msg [key msg]
+  ;; Iterate over all the pairs
+  (foreach msg [
 
+    ])
 end
 
 ;; Add a new value to the message
@@ -37,13 +61,15 @@ to-report set-value-msg [key value msg]
 end
 
 ;; Send message to an specific agent
-to send-message [agent]
+to send-message [agents msg]
   ;; Add the message to the agents mailbox
 end
 
 ;; Create a new perfomative message
-to-report create-msg[value-of-performative]
-
+to-report create-msg [value-of-performative]
+  let performative list "performative" value-of-performative
+  let sender list "sender" myself
+  report list performative sender
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -74,10 +100,10 @@ ticks
 30.0
 
 SLIDER
-533
-175
-705
-208
+505
+170
+683
+203
 n_blues
 n_blues
 1
@@ -89,10 +115,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-532
-222
-704
-255
+505
+215
+683
+248
 n_greens
 n_greens
 1
@@ -102,6 +128,55 @@ n_greens
 1
 NIL
 HORIZONTAL
+
+SLIDER
+505
+260
+682
+293
+n_green_messages
+n_green_messages
+0
+10
+2.0
+1
+1
+NIL
+HORIZONTAL
+
+BUTTON
+507
+306
+574
+340
+NIL
+setup
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+581
+307
+645
+341
+NIL
+go
+T
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
 
 @#$#@#$#@
 ## WHAT IS IT?
@@ -445,7 +520,7 @@ false
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 @#$#@#$#@
-NetLogo 6.3.0
+NetLogo 6.4.0
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
@@ -462,5 +537,5 @@ true
 Line -7500403 true 150 150 90 180
 Line -7500403 true 150 150 210 180
 @#$#@#$#@
-0
+1
 @#$#@#$#@
