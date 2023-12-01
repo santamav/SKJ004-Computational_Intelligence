@@ -1,166 +1,55 @@
-;; Create the two agent types
-breed [greens green-agent]
-breed [blues blue-agent]
-;; Setup each types variables
 turtles-own [ mailbox ]
-greens-own [ successful ]
-blues-own [ partner ]
 
-; *********** SETUP **************
-
-;; Set up simulation items
 to setup
   clear-all
-  setup-turtles
-  setup-partners
-  reset-ticks
-end
-
-;; Setup turtles population
-to setup-turtles
-  ;; Create blue turtles
-   create-blues n_blues [
-    setxy random-xcor random-ycor
-    set color blue ;; Set team color
-    set mailbox []
-    set partner nobody
-  ]
-  ;; Create green turtles
-  create-greens n_greens [
-    setxy random-pxcor random-pycor
-    set color green
-    set successful 0
+  create-turtles 1 [
     set mailbox []
   ]
 end
 
-;; Setup the blues bijective relationship
-to setup-partners
-  ;; Separate the blues in two halfs
-  let half n-of (n_blues / 2) blues
-  let other-half blues with [not member? self half]
-  ;; Create the bijective relationship
-  ask half [
-    set partner one-of other-half with [partner = nobody]
-    ask partner [set partner myself]
-  ]
-end
-
-; *********************************
-
-;; Execution loop
 to go
-  ;; Ask the green turtles to send a message to the n blues
-  ask greens [greens-send-msgs]
-  ;; Ask blues to read the mailbox and do actions
-  ask blues [read-mailbox]
-  ;; Ask the greens to read the mailbox and do actions
-  ask greens [
+  ask turtles [
+    let msg create-msg "inform"
+    set msg set-msg-value "content" 1 msg
+    send-msg msg
+
+    set msg create-msg "request"
+    send-msg msg
+
     read-mailbox
   ]
-  tick
+  ;show mailbox
 end
 
-;; ******* update turtles ********
-
-;; Green turtles send message
-to greens-send-msgs
-  ;; Create the message
-  let performative ifelse-value (random-float 1) <= 0.99 ["request"]["inform"]
-  let msg create-msg performative
-  ;; Add the necessary extra information
-  if performative = "inform" [
-    ;; Find a new partner
-    let new_partner one-of blues
-    ;; Add new partner to the message content
-    set msg set-value-msg "content" new_partner msg
-  ]
-  ;; Send the message to n_blues
-  send-message (n-of n_messages blues) msg
+to-report create-msg [value]
+  report list list "performative" value list "sender" self
 end
 
-;; Make the turtles read all the messages in the mailbox
-to read-mailbox
-  ;; Read the messages in the mailbox
-  foreach mailbox [
-    [msg] -> read-msg msg
-  ]
-  ;; Clear the mailbox
-  set mailbox []
-end
-
-;; Read the message received
-to read-msg [msg]
-  ;; Get performative value
-  let performative get-value-msg "performative" msg
-  (ifelse
-    performative = "inform"[
-      ;; Get the new partner from the msg
-      let new_partner get-value-msg "content" msg
-      ;; Set the new partner
-      if not (new_partner = self) [
-        set partner new_partner
-      ]
-    ]
-    performative = "request" [
-      ;; Move towards the partner
-      move-towards-partner
-      ;; Answer accept to the green sender
-      let sender get-value-msg "sender" msg
-      let accept_msg create-msg "accept"
-      send-message sender accept_msg
-    ]
-    performative = "accept" [
-      ;; Increment the greens successful value
-      set successful successful + 1
-    ])
-end
-
-;; Move turtle in the direction of the partner
-to move-towards-partner
-  if not (partner = nobody) and (distance partner > 0)[
-    set heading towards partner
-    fd 0.1
-  ]
-end
-
-;; *******************************
-
-;; Get value related to the key in the message
-to-report get-value-msg [key msg]
-  ;; Iterate over all the pairs
-  foreach msg [
-    ;; If the key of the acl message is the same as the requested key, return the value
-    [acl_msg] -> if (item 0 acl_msg) = key [report item 1 acl_msg]
-  ]
-end
-
-;; Add a new value to the message
-to-report set-value-msg [key value msg]
-  ;; Add key value pair to the message
+to-report set-msg-value [key value msg]
   report lput list key value msg
 end
 
-;; Send message to an agentset
-to send-message [agents msg]
-  ask agents [
-    ;; Add the message to the agents mailbox
-    set mailbox lput msg mailbox
+to send-msg [msg]
+  set mailbox lput msg mailbox
+end
+
+to read-mailbox
+  foreach mailbox [
+    [msg] -> read-msg "sender" msg
   ]
 end
 
-;; Create a new perfomative message
-to-report create-msg [value-of-performative]
-  let performative list "performative" value-of-performative
-  let sender list "sender" self
-  report list performative sender
+to read-msg [key msg]
+  foreach  msg [
+    [acl_msg] -> if (item 0 acl_msg) = key [show (item 1 acl_msg)]
+  ]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-20
-55
-457
-493
+210
+10
+647
+448
 -1
 -1
 13.0
@@ -183,58 +72,13 @@ GRAPHICS-WINDOW
 ticks
 30.0
 
-SLIDER
-497
-54
-675
-87
-n_blues
-n_blues
-1
-1000
-491.0
-2
-1
-NIL
-HORIZONTAL
-
-SLIDER
-497
-99
-675
-132
-n_greens
-n_greens
-1
-1000
-105.0
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-497
-144
-674
-177
-n_messages
-n_messages
-0
-10
-1.0
-1
-1
-NIL
-HORIZONTAL
-
 BUTTON
-499
-190
-566
-224
+42
+56
+105
+89
 NIL
-setup
+go
 NIL
 1
 T
@@ -246,13 +90,13 @@ NIL
 1
 
 BUTTON
-573
-191
-637
-225
+52
+109
+119
+142
 NIL
-go
-T
+setup
+NIL
 1
 T
 OBSERVER
@@ -621,5 +465,5 @@ true
 Line -7500403 true 150 150 90 180
 Line -7500403 true 150 150 210 180
 @#$#@#$#@
-1
+0
 @#$#@#$#@
