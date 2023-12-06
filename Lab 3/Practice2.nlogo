@@ -11,6 +11,7 @@ blues-own [ partner ]
 ;; Set up simulation items
 to setup
   clear-all
+  random-seed 1234
   setup-turtles
   setup-partners
   reset-ticks
@@ -159,8 +160,8 @@ end
 GRAPHICS-WINDOW
 20
 55
-769
-805
+457
+493
 -1
 -1
 13.0
@@ -173,10 +174,10 @@ GRAPHICS-WINDOW
 0
 0
 1
--28
-28
--28
-28
+-16
+16
+-16
+16
 0
 0
 1
@@ -184,54 +185,54 @@ ticks
 30.0
 
 SLIDER
-785
+480
 55
-963
+658
 88
 n_blues
 n_blues
 1
 1000
-853.0
+407.0
 2
 1
 NIL
 HORIZONTAL
 
 SLIDER
-785
+480
 100
-963
+658
 133
 n_greens
 n_greens
 1
 1000
-277.0
+136.0
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-785
+480
 145
-962
+657
 178
 n_messages
 n_messages
 0
 10
-8.0
+1.0
 1
 1
 NIL
 HORIZONTAL
 
 BUTTON
-787
+482
 191
-854
+549
 225
 NIL
 setup
@@ -246,9 +247,9 @@ NIL
 1
 
 BUTTON
-861
+556
 192
-925
+620
 226
 NIL
 go
