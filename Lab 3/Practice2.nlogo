@@ -118,8 +118,8 @@ end
 
 ;; Move turtle in the direction of the partner
 to move-towards-partner
-  if not (partner = nobody) and (distance partner > 0)[
-    set heading towards partner
+  if not (partner = nobody)[
+    face partner
     fd 0.1
   ]
 end
@@ -159,8 +159,8 @@ end
 GRAPHICS-WINDOW
 20
 55
-457
-493
+769
+805
 -1
 -1
 13.0
@@ -170,13 +170,13 @@ GRAPHICS-WINDOW
 1
 1
 0
+0
+0
 1
-1
-1
--16
-16
--16
-16
+-28
+28
+-28
+28
 0
 0
 1
@@ -184,55 +184,55 @@ ticks
 30.0
 
 SLIDER
-497
-54
-675
-87
+785
+55
+963
+88
 n_blues
 n_blues
 1
 1000
-491.0
+853.0
 2
 1
 NIL
 HORIZONTAL
 
 SLIDER
-497
-99
-675
-132
+785
+100
+963
+133
 n_greens
 n_greens
 1
 1000
-105.0
+277.0
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-497
-144
-674
-177
+785
+145
+962
+178
 n_messages
 n_messages
 0
 10
-1.0
+8.0
 1
 1
 NIL
 HORIZONTAL
 
 BUTTON
-499
-190
-566
-224
+787
+191
+854
+225
 NIL
 setup
 NIL
@@ -246,10 +246,10 @@ NIL
 1
 
 BUTTON
-573
-191
-637
-225
+861
+192
+925
+226
 NIL
 go
 T
