@@ -56,9 +56,7 @@ to go
   ;; Ask blues to read the mailbox and do actions
   ask blues [read-mailbox]
   ;; Ask the greens to read the mailbox and do actions
-  ask greens [
-    read-mailbox
-  ]
+  ask greens [read-mailbox]
   tick
 end
 
@@ -66,18 +64,20 @@ end
 
 ;; Green turtles send message
 to greens-send-msgs
+  ;; select receivers
+  let receivers n-of n_messages blues
   ;; Create the message
   let performative ifelse-value (random-float 1) <= 0.99 ["request"]["inform"]
   let msg create-msg performative
   ;; Add the necessary extra information
   if performative = "inform" [
-    ;; Find a new partner
-    let new_partner one-of blues
+    ;; Find a new partner that is not in the receivers list
+    let new_partner one-of blues with [not member? self receivers]
     ;; Add new partner to the message content
     set msg set-value-msg "content" new_partner msg
   ]
   ;; Send the message to n_blues
-  send-message (n-of n_messages blues) msg
+  send-message receivers msg
 end
 
 ;; Make the turtles read all the messages in the mailbox
@@ -99,9 +99,7 @@ to read-msg [msg]
       ;; Get the new partner from the msg
       let new_partner get-value-msg "content" msg
       ;; Set the new partner
-      if not (new_partner = self) [
-        set partner new_partner
-      ]
+      set partner new_partner
     ]
     performative = "request" [
       ;; Move towards the partner
@@ -121,7 +119,7 @@ end
 to move-towards-partner
   if not (partner = nobody)[
     face partner
-    fd 0.1
+    fd 0.5
   ]
 end
 
@@ -171,8 +169,8 @@ GRAPHICS-WINDOW
 1
 1
 0
-0
-0
+1
+1
 1
 -16
 16
@@ -191,9 +189,9 @@ SLIDER
 88
 n_blues
 n_blues
-1
+2
 1000
-407.0
+1000.0
 2
 1
 NIL
@@ -208,7 +206,7 @@ n_greens
 n_greens
 1
 1000
-136.0
+114.0
 1
 1
 NIL
@@ -223,7 +221,7 @@ n_messages
 n_messages
 0
 10
-1.0
+7.0
 1
 1
 NIL
