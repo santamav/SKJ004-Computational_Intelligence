@@ -119,7 +119,7 @@ end
 to move-towards-partner
   if not (partner = nobody)[
     face partner
-    fd 0.5
+    fd 0.1
   ]
 end
 
@@ -169,8 +169,8 @@ GRAPHICS-WINDOW
 1
 1
 0
-1
-1
+0
+0
 1
 -16
 16
