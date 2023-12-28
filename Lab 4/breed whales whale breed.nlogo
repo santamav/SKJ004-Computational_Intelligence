@@ -62,6 +62,23 @@ to setup-whales
   ]
 end
 
+;; Test if the messages are properly writen, sent amd read
+to do-test
+  let test_boat one-of boats
+  ask test_boat [
+    let msg create-message "cfps"
+    ;show msg
+    set msg set-value-msg msg "conversation_id" increment-and-get-id
+    ;show msg
+    ;show get-value-msg msg "performative"
+    set mailbox lput msg mailbox
+    set mailbox lput msg mailbox
+    show count-mailbox-id id
+    set mailbox remove-from-lmgs mailbox (get-lmsgs-key mailbox "conversation_id" id)
+    show count-mailbox-id id
+  ]
+end
+
 to go
   ;if ticks = 300 [save-data-of-whales-to-file-and-stop]
   move
@@ -72,9 +89,9 @@ to go
 end
 
 to acting-as-initiator
-   ;; Code to complete
-   ;; Code to complete
-   ;; Code to complete
+  ask boats[
+    revise-my-whales
+  ]
 end
 
 to acting-as-follower
@@ -128,9 +145,14 @@ end
 ;;;   _x: A list with the whale that I was monitoring, but now is out
 ;;;          of my scope, with its related ticks
 to initiate-new-cfps [ _x ]
-   ;; Code to complete
-   ;; Code to complete
-   ;; Code to complete
+  ;; Create the message
+  let msg create-message "cfps"
+  ;; Assing the contract net id
+  set msg set-value-msg msg "conversation_id" increment-and-get-id
+  ;; Add the whales content to the message
+  set msg set-value-msg msg "content" _x
+  ;; Send the message to the contract net
+  send-message msg
 end
 
 
@@ -170,45 +192,51 @@ end
 ;;;;
 
 to-report create-message [performative]
-;;;
-;;; Your code done in practica 1 here
-;;;
+  ;; Create the message airs
+  let performative_msg list "performative" performative
+  let sender_msg list "sender" self
+  ;; Report the new message with the initial pairs
+  report list performative_msg sender_msg
 end
 
 to-report set-value-msg [msg key value]
-;;;
-;;; Your code done in practica 1 here
-;;;
+  ;; Add the new key-value pair to the message
+  report lput list key value msg
 end
 
 to-report get-value-msg [msg key]
-;;;
-;;; Your code done in practica 1 here
-;;;
+  ;; Look for the value of the key
+  foreach msg [
+    acl -> if (first acl) = key [report last acl]
+  ]
 end
 
 to send-message [msg]
-;;;
-;;; Your code done in practica 1 here
-;;;
+  ask other boats [
+    ;; Add the new message to all the other boats mailbox
+    set mailbox lput msg mailbox
+  ]
 end
 
 to-report count-mailbox-id [_id]
-;;;
-;;; Your code done in practica 1 here
-;;;
+  ;; Report how many messages with the id we have in the mailbox
+  report length get-lmsgs-key mailbox "conversation_id" _id
 end
 
+;; Extract messages with key and value
 to-report get-lmsgs-key [lmsgs key value]
-;;;
-;;; Your code done in practica 1 here
-;;;
+  report filter [msg -> (get-value-msg msg key) = value] lmsgs
 end
 
 to-report get-min-msg [lmsgs]
 ;;;
 ;;; Your code done in practica 1 here
 ;;;
+end
+
+to-report remove-from-lmgs [lmgs lmgs_to_remove]
+  ;; Filter for only the message that are not in the list
+  report filter [msg -> not member? msg lmgs_to_remove] lmgs
 end
 
 ;;;
@@ -413,6 +441,23 @@ false
 "" ""
 PENS
 "nobody" 1.0 0 -13791810 true "" ""
+
+BUTTON
+51
+699
+128
+732
+NIL
+do-test
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
 
 @#$#@#$#@
 ## WHAT IS IT?
