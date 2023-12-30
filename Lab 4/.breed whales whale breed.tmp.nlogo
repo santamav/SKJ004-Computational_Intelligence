@@ -265,7 +265,7 @@ to receive-responses-to-proposals-cfps
                      set color [color] of myself
                      set my-boat myself
                  ]
-                 ;;show new-whale-info
+                 ;show new-whale-info
               ]
 
               ;;; This conversation must end for a-p and r-p messages
