@@ -124,7 +124,7 @@ to revise-my-whales
             [x -> distance first x > ratio-sensor] my-whales
 
   if not empty? whales-out [
-    set my-whales filter [x -> not member? x whales-out] my-whales
+    set my-whales filter [x -> not member? x whales-out] my-whales ;; remove whales from list
     foreach whales-out [
       x -> ask first x [
               set color blue
@@ -134,10 +134,14 @@ to revise-my-whales
            initiate-new-cfps lput ticks x
     ]
   ]
+
   ;;; Start a new cfp for the whales whose previous cfps had failed
+  let failed-cfps-to-remove []
   foreach failed-cfps [
     x -> initiate-new-cfps x
+    set failed-cfps-to-remove lput x failed-cfps-to-remove
   ]
+  set failed-cfps remove-from-lmgs failed-cfps failed-cfps-to-remove ;; Remove them from the list, otherwise they will always be on the list even if they are solved
 end
 
 ;;:
@@ -162,6 +166,7 @@ end
 
 ;; Check the responses to the created cfps
 to receive-response-to-cfps
+  let finished_cfps []
   foreach initiator-cfps [ _cfps -> ;; _cfps = [conversation_id, [whale, ticks+]]
     let _id first _cfps
     let _whale last _cfps
@@ -173,17 +178,17 @@ to receive-response-to-cfps
         let winner get-min-msg proposals ;; Get the proposal with the smaller value
         response-accept-proposal one-of winner _id _whale ;; Accept the winner proposal
         response-reject-proposal remove-from-lmgs proposals winner _id ;; Reject the rest of proposals
-
-        set my-whales filter [_x -> not member? _x my-whales] my-whales;; Remove whale from list
+        ;; Set cfps as finished
       ][
         ;; IF there are no proposals it means they are all rejects so a new cfps has to be created
         set failed-cfps lput _whale failed-cfps ;; add to the failed cfps
       ]
+      set finished_cfps lput _cfps finished_cfps
     ]
-
-    ;; Remove the finished cfps from the list
-    set initiator-cfps remove-from-lmgs initiator-cfps lmsgs
   ]
+
+  ;; Remove the finished cfps from the list
+  set initiator-cfps remove-from-lmgs initiator-cfps finished_cfps
 end
 
 ;;; Send the accept proposal message to the winner
@@ -224,8 +229,7 @@ to respond-new-cfps
     let _distance distance first _x ;; Calculate distance to the whale
     ifelse _distance <= ratio-sensor
     [respond-proposal _sender _id _distance] ;; If the whale is at sensor distance, send proposal
-    [respond-reject _sender _id
-    show _distance] ;; Else: Send reject
+    [respond-reject _sender _id] ;; Else: Send reject
   ]
 
 end
@@ -244,6 +248,8 @@ end
 to respond-reject [_sender _id]
   let msg create-message "reject"
   set msg set-value-msg msg "conversation_id" _id
+  ;; Send message to sender
+  send-message msg _sender
 end
 
 to receive-responses-to-proposals-cfps
@@ -265,7 +271,7 @@ to receive-responses-to-proposals-cfps
                      set color [color] of myself
                      set my-boat myself
                  ]
-                 ;;show new-whale-info
+                 ;show new-whale-info
               ]
 
               ;;; This conversation must end for a-p and r-p messages
