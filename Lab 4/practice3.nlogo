@@ -91,8 +91,8 @@ end
 to acting-as-initiator
   ask boats[
     ;; Revise the whales states and create new cfps if necessary
-    revise-my-whales
     receive-response-to-cfps
+    revise-my-whales
   ]
 end
 
@@ -159,7 +159,7 @@ to initiate-new-cfps [ _x ]
   ;; Add the whales content to the message
   set msg set-value-msg msg "content" _x
   ;; Send the message to the contract net
-  send-message msg other boats
+  send-message msg boats
   ;; Add message to the active cfps
   set initiator-cfps lput list id _x initiator-cfps
 end
